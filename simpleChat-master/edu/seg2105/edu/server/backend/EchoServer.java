@@ -5,6 +5,7 @@ package edu.seg2105.edu.server.backend;
 
 
 import ocsf.server.*;
+import java.sql.SQLOutput;
 
 /**
  * This class overrides some of the methods in the abstract 
@@ -72,6 +73,15 @@ public class EchoServer extends AbstractServer
       ("Server has stopped listening for connections.");
   }
   
+  
+  protected void clientConnected(ConnectionToClient client) {
+	    System.out.println("Welcome! You are connected to the server.");
+	  }
+  
+  synchronized protected void clientDisconnected(
+          ConnectionToClient client) {
+    System.out.println("Goodbye! You have disconnected from the server.");
+  }
   
   //Class methods ***************************************************
   
