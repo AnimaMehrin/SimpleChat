@@ -29,7 +29,7 @@ public class ChatClient extends AbstractClient {
   ChatIF clientUI;
 
   // Constructors ****************************************************
-
+  private String loginID = "";
   /**
    * Constructs an instance of the chat client.
    *
@@ -38,12 +38,22 @@ public class ChatClient extends AbstractClient {
    * @param clientUI The interface type variable.
    */
 
-  public ChatClient(String host, int port, ChatIF clientUI)
+  public ChatClient(String loginID, String host, int port, ChatIF clientUI)
       throws IOException {
     super(host, port); // Call the superclass constructor
     this.clientUI = clientUI;
+    this.loginID = loginID;
     openConnection();
   }
+  
+  public String getLoginId() {
+      return loginID;
+  }
+  
+  public void setLoginId(String loginID) {
+      this.loginID = loginID;
+  }
+  
 
   // Instance methods ************************************************
 
@@ -133,5 +143,16 @@ public class ChatClient extends AbstractClient {
     clientUI.display("The server has shut down.");
     System.exit(0);
   }
+  
+  @Override
+  protected void connectionEstablished() {
+      try {
+          sendToServer("#login " + getLoginId());
+      } catch (IOException e) {
+          System.out.println("ERROR - Could not send login ID to server");
+          System.exit(1);
+      }
+  }
+  
 }
 // End of ChatClient class

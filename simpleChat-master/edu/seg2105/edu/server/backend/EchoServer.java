@@ -6,7 +6,7 @@ package edu.seg2105.edu.server.backend;
 
 import ocsf.server.*;
 import java.sql.SQLOutput;
-
+import java.util.Arrays;
 /**
  * This class overrides some of the methods in the abstract 
  * superclass in order to give more functionality to the server.
@@ -18,6 +18,15 @@ import java.sql.SQLOutput;
  */
 public class EchoServer extends AbstractServer 
 {
+	
+	
+	private final String LOGIN_KEY = "loginID";
+	
+	
+	  private String getLoginKey() {
+	    return LOGIN_KEY;
+	  } 
+	  
   //Class variables *************************************************
   
   /**
@@ -48,8 +57,13 @@ public class EchoServer extends AbstractServer
   public void handleMessageFromClient
     (Object msg, ConnectionToClient client)
   {
-    System.out.println("Message received: " + msg + " from " + client);
-    this.sendToAllClients(msg);
+	  String[] message = msg.toString().split(" ");
+	    if(message[0].equals("#login" )) {
+	        client.setInfo(getLoginKey(), message[1]);
+	    } else {
+	      System.out.println("Message received: " + msg + " from " + client.getInfo(getLoginKey()));
+	      this.sendToAllClients(msg);
+	    }
   }
     
   /**
@@ -75,6 +89,7 @@ public class EchoServer extends AbstractServer
   @Override
   protected void clientConnected(ConnectionToClient client) {
 	    System.out.println("Welcome! You are connected to the server.");
+	    client.setInfo("hasLoggedIn", false); 
 	  }
   @Override
   synchronized protected void clientDisconnected(ConnectionToClient client) {
