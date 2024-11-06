@@ -4,6 +4,10 @@ package edu.seg2105.client.ui;
 // "Object Oriented Software Engineering" and is issued under the open-source
 // license found at www.lloseng.com 
 
+//This file contains material supporting section 3.7 of the textbook:
+//"Object Oriented Software Engineering" and is issued under the open-source
+//license found at www.lloseng.com 
+
 import java.io.*;
 import java.util.Scanner;
 
@@ -11,118 +15,133 @@ import edu.seg2105.client.backend.ChatClient;
 import edu.seg2105.client.common.*;
 
 /**
- * This class constructs the UI for a chat client. It implements the
- * chat interface in order to activate the display() method.
- * Warning: Some of the code here is cloned in ServerConsole
- *
- * @author Fran&ccedil;ois B&eacute;langer
- * @author Dr Timothy C. Lethbridge
- * @author Dr Robert Lagani&egrave;re
- */
+* This class constructs the UI for a chat client.  It implements the
+* chat interface in order to activate the display() method.
+* Warning: Some of the code here is cloned in ServerConsole 
+*
+* @author Fran&ccedil;ois B&eacute;langer
+* @author Dr Timothy C. Lethbridge  
+* @author Dr Robert Lagani&egrave;re
+*/
 public class ClientConsole implements ChatIF {
-  // Class variables *************************************************
+//Class variables *************************************************
 
-  /**
-   * The default port to connect on.
-   */
-  final public static int DEFAULT_PORT = 5555;
+/**
+* The default port to connect on.
+*/
+final public static int DEFAULT_PORT = 5555;
 
-  // Instance variables **********************************************
+//Instance variables **********************************************
+private String loginId;
 
-  /**
-   * The instance of the client that created this ConsoleChat.
-   */
-  ChatClient client;
+/**
+* The instance of the client that created this ConsoleChat.
+*/
+ChatClient client;
 
-  /**
-   * Scanner to read from the console
-   */
-  Scanner fromConsole;
 
-  // Constructors ****************************************************
+/**
+* Scanner to read from the console
+*/
+Scanner fromConsole;
 
-  /**
-   * Constructs an instance of the ClientConsole UI.
-   *
-   * @param host The host to connect to.
-   * @param port The port to connect on.
-   */
-  public ClientConsole(String loginID, String host, int port) {
-    try {
-      client = new ChatClient(loginID, host, port, this);
 
-    } catch (IOException exception) {
-      System.out.println("Error: Can't setup connection!"
-          + " Terminating client.");
-      System.exit(1);
-    }
+//Constructors ****************************************************
 
-    // Create scanner object to read from console
-    fromConsole = new Scanner(System.in);
-  }
+/**
+* Constructs an instance of the ClientConsole UI.
+*
+* @param host The host to connect to.
+* @param port The port to connect on.
+*/
+public ClientConsole(String loginId, String host, int port) {
+ try {
+   setLogin(loginId);
+   client = new ChatClient(loginId, host, port, this);
+   System.out.println(loginId + " has logged on.");
+ } catch (IOException exception) {
+   System.out.println("Error: Can't setup connection!"
+           + " Terminating client.");
+   System.exit(1);
+ }
 
-  // Instance methods ************************************************
+ // Create scanner object to read from console
+ fromConsole = new Scanner(System.in);
+}
 
-  /**
-   * This method waits for input from the console. Once it is
-   * received, it sends it to the client's message handler.
-   */
-  public void accept() {
-    try {
 
-      String message;
+//Instance methods ************************************************
 
-      while (true) {
-        message = fromConsole.nextLine();
-        client.handleMessageFromClientUI(message);
-      }
-    } catch (Exception ex) {
-      System.out.println("Unexpected error while reading from console!");
-    }
-  }
+/**
+* This method waits for input from the console.  Once it is
+* received, it sends it to the client's message handler.
+*/
+public void accept() {
+ try {
 
-  /**
-   * This method overrides the method in the ChatIF interface. It
-   * displays a message onto the screen.
-   *
-   * @param message The string to be displayed.
-   */
-  public void display(String message) {
-    System.out.println("> " + message);
-  }
+   String message;
 
-  // Class methods ***************************************************
+   while (true) {
+     message = fromConsole.nextLine();
+     client.handleMessageFromClientUI(message);
+   }
+ } catch (Exception ex) {
+   System.out.println
+           ("Unexpected error while reading from console!");
+ }
+}
 
-  /**
-   * This method is responsible for the creation of the Client UI.
-   *
-   * @param args  The host to connect to.
-   */
-  public static void main(String[] args) {
-	String loginID = "";
-    String host = "";
+/**
+* This method overrides the method in the ChatIF interface.  It
+* displays a message onto the screen.
+*
+* @param message The string to be displayed.
+*/
+public void display(String message) {
+   System.out.println(message);
+}
 
-    int port;
+private void setLogin(String id) {
+ loginId = id;
+}
 
-    try {
-    	loginID = args[0];
-        host = args[1];
-        port = Integer.parseInt(args[2]);
-    } catch (ArrayIndexOutOfBoundsException e) {
-    	if(loginID.isEmpty()) {
-            System.out.println("ERROR - Login ID not specified.");
-            System.out.println("Can't setup connection!"
-                    + " Terminating client.");
-            System.exit(1);
-          }
-      host = "localhost";
-      port = DEFAULT_PORT;
-    } catch (NumberFormatException e) {
-      port = DEFAULT_PORT;
-    }
+/*private String getLoginId() {
+ return loginId;
+}*/
 
-    ClientConsole chat = new ClientConsole(loginID,host, port);
-    chat.accept(); // Wait for console data
-  }
+
+//Class methods ***************************************************
+
+/**
+* This method is responsible for the creation of the Client UI.
+*
+* @param args The host to connect to.
+*/
+public static void main(String[] args) {
+ String loginId = "";
+ String host = "localhost"; // Default host if not provided
+ int port = DEFAULT_PORT;   // Default port if not provided
+
+ try {
+   if (args.length < 1 || args[0].isEmpty()) {
+     System.out.println("ERROR - No login ID specified. Connection aborted.");
+     System.exit(1);
+   } else {
+     loginId = args[0];
+   }
+
+   if (args.length > 1) {
+     host = args[1];
+   }
+   if (args.length > 2) {
+     port = Integer.parseInt(args[2]);
+   }
+ } catch (NumberFormatException e) {
+   port = DEFAULT_PORT;
+ }
+
+ ClientConsole chat = new ClientConsole(loginId, host, port);
+ chat.accept();
+}
 }
 // End of ConsoleChat class

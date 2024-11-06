@@ -1,16 +1,19 @@
 package edu.seg2105.client.ui;
 
 import edu.seg2105.client.common.ChatIF;
-
 import edu.seg2105.edu.server.backend.EchoServer;
+import ocsf.server.ConnectionToClient;
+
 import java.io.IOException;
 import java.util.Arrays;
 import java.util.Scanner;
 
 public class ServerConsole implements ChatIF {
     final public static int DEFAULT_PORT = 5555;
+
     EchoServer server;
     Scanner fromConsole;
+
     public ServerConsole(int port) {
         try {
             server = new EchoServer(port);
@@ -19,28 +22,30 @@ public class ServerConsole implements ChatIF {
             System.out.println("ERROR - Failed to make server!");
         }
     }
+
     public void accept() {
         try {
             String message;
+
             while (true) {
                 message = fromConsole.nextLine();
                 if (message.startsWith("#")) {
                     handleServerCommand(message);
                 } else {
                     server.sendToAllClients("SERVER MSG> " + message);
-                    display("SERVER MSG>" + message);
+                    display(message);
                 }
             }
         } catch (Exception ex) {
             System.out.println("ERROR - Failed to read from console!");
         }
     }
+
     private void handleServerCommand(String message) throws IOException {
         String[] command = message.split(" ");
-        System.out.println(Arrays.toString(command));
         switch (command[0]) {
             case "#quit" -> {
-                System.out.println("Server is shutting down");
+                System.out.println("Server is shutting down.");
                 System.exit(0);
             }
             case "#stop" -> server.stopListening();
@@ -64,9 +69,11 @@ public class ServerConsole implements ChatIF {
             default -> System.out.println("Please enter a valid command.");
         }
     }
+
+
     @Override
     public void display(String message) {
-        System.out.println("> " + message);
+        System.out.println("SERVER MSG> " + message);
     }
 
     public static void main(String[] args) {

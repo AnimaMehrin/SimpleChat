@@ -50,12 +50,12 @@ public class ChatClient extends AbstractClient {
       return loginID;
   }
   
-  public void setLoginId(String loginID) {
+  /*public void setLoginId(String loginID) {
       this.loginID = loginID;
-  }
+  }*/
   
 
-  // Instance methods ************************************************
+  // Instance methods ************************************************ 
 
   /**
    * This method handles all data that comes in from the server.
@@ -84,7 +84,7 @@ public class ChatClient extends AbstractClient {
       }
       case "#setport" -> {
         if (!isConnected()) {
-          int newPort = Integer.parseInt(command[0]);
+          int newPort = Integer.parseInt(command[1]);
           setPort(newPort);
           System.out.println("Port has been successfully set.");
         } else {
@@ -96,7 +96,8 @@ public class ChatClient extends AbstractClient {
           openConnection();
           System.out.println("Successfully logged in.");
         } else {
-          System.out.println("Currently logged in.");
+        	System.out.println("Error: You are already logged in. Connection will be terminated.");
+            connectionClosed();
         }
       }
       case "#gethost" -> System.out.println("Current host: " + getHost());
@@ -134,7 +135,7 @@ public class ChatClient extends AbstractClient {
   }
 
   @Override
-  protected void connectionClosed() {
+  protected void connectionClosed()  {
     clientUI.display("Connection closed.");
   }
 
